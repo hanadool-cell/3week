@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dancing Cats</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        h1 { font-size: 60px;
+            width: 50; margin-bottom: 10px; }
+        p { color:#DFDFDF; font-size:20px; }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 100px; 
+            margin-top: 50px;
+        }
+
+        #image-container {
+            display: flex;
+            gap: 20px; 
+        }
+
+        .cat-image {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;          
+            transition: transform 0.2s;
+        }
+        #result-circle {
+           width: 400px;
+            height: 400px;
+            background-color: #424242;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;}
+
+        #result-gif {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Mixing Dancing Cats🐱💽</h1>
+    <p>원하는 고양이를 2~3마리 선택해보세요!🐈</p>
+
+    <div class="container">
+        <div id="image-container">
+            <img src="11.png" id="cat1" class="cat-image" alt="고양이 1">
+            <img src="21.png" id="cat2" class="cat-image" alt="고양이 2">
+            <img src="31.png" id="cat3" class="cat-image" alt="고양이 3">
+        </div>
+        <div id="result-circle">
+            <img src="" id="result-gif" alt="">
+        </div>
+    </div>
+
+    <audio id="soundDoom" src="doom.mp3"></audio>
+    <audio id="soundDance" src="dance.mp3"></audio>
+    <audio id="soundNang" src="nang.mp3"></audio>
+    <audio id="soundSweet" src="sweet.mp3"></audio>
+    <audio id="soundDoodoo" src="doodoo.mp3"></audio>
+
+    <script>
+        // HTML 요소 변수 할당
+        const cat1 = document.getElementById('cat1');
+        const cat2 = document.getElementById('cat2');
+        const cat3 = document.getElementById('cat3');
+        const resultGif = document.getElementById('result-gif');
+        
+        // 오디오 요소 변수 할당
+        const soundDoom = document.getElementById('soundDoom');
+        const soundDance = document.getElementById('soundDance');
+        const soundNang = document.getElementById('soundNang');
+        const soundSweet = document.getElementById('soundSweet');
+        const soundDoodoo = document.getElementById('soundDoodoo');
+        const combinationSounds = [soundDance, soundNang, soundSweet, soundDoodoo];
+
+        // 이미지 현재 상태 저장 객체
+        const imageStates = {
+            cat1: '11.png',
+            cat2: '21.png',
+            cat3: '31.png'
+        };
+
+        // GIF 링크 저장 객체
+        const gifLinks = {
+            combo1: "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWo3NnFzeGVsMjRydzNmMmc5c2QxODVzZnlvM21tc3B3d3MxaXgzMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ylyUQkUxqSlpObS1z2/giphy.gif",
+            combo2: "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGNmcHljbGRxbHlnbTBocWUycno3YzNrMW44ajJ2cDdsOTNxM205eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/5xtDarzQESdPyVnvolO/giphy.gif",
+            combo3: "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWxqdGk3OXU5amcwZDVsNWd6dnRhMGVxbTVpMGx2YXd5dmZ0cm8xZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4LZMbupv52zASw1z1bs4/giphy.gif",
+            combo4: "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExemdvZXJlYjNqOGhjbnp5M2NvbnZhMGo2cHh4NXdoYXJpaGEweW9zYSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bTvCkBTQDIPyE/giphy.gif"
+        };
+        
+        // doom.mp3가 끝난 후 재생될 오디오를 저장하는 변수
+        let pendingSound = null;
+
+        // doom.mp3 재생이 끝나면 pendingSound에 할당된 오디오를 재생
+        soundDoom.onended = function() {
+            if (pendingSound) {
+                pendingSound.currentTime = 0;
+                pendingSound.play();
+                pendingSound = null; // 실행 후 초기화
+            }
+        };
+        
+        // 모든 조합 오디오를 중지하는 함수
+        function stopAllCombinationSounds() {
+            combinationSounds.forEach(sound => {
+                sound.pause();
+                sound.currentTime = 0;
+            });
+            pendingSound = null;
+        }
+
+        // 이미지 조합을 확인하고 GIF와 오디오를 제어하는 함수
+        function checkCombination() {
+            stopAllCombinationSounds(); // 함수 시작 시 모든 조합 오디오 중지
+            
+            const { cat1, cat2, cat3 } = imageStates;
+            let currentGif = '';
+            let currentSound = null;
+
+            // 1.png, 2.png, 31.png 조합
+            if (cat1 === '1.png' && cat2 === '2.png' && cat3 === '31.png') {
+                currentGif = gifLinks.combo1;
+                currentSound = soundDance;
+            } 
+            // 1.png, 2.png, 3.png 조합
+            else if (cat1 === '1.png' && cat2 === '2.png' && cat3 === '3.png') {
+                currentGif = gifLinks.combo2;
+                currentSound = soundNang;
+            } 
+            // 1.png, 21.png, 3.png 조합
+            else if (cat1 === '1.png' && cat2 === '21.png' && cat3 === '3.png') {
+                currentGif = gifLinks.combo3;
+                currentSound = soundSweet;
+            } 
+            // 11.png, 2.png, 3.png 조합
+            else if (cat1 === '11.png' && cat2 === '2.png' && cat3 === '3.png') {
+                currentGif = gifLinks.combo4;
+                currentSound = soundDoodoo;
+            }
+
+            resultGif.src = currentGif; // GIF 업데이트
+
+            if (currentSound) {
+                // doom.mp3가 재생 중이 아니면 바로 재생, 재생 중이면 pendingSound로 설정
+                if (soundDoom.paused) {
+                    currentSound.currentTime = 0;
+                    currentSound.play();
+                } else {
+                    pendingSound = currentSound;
+                }
+            }
+        }
+
+        // 첫 번째 고양이 이미지 클릭 이벤트
+        cat1.onclick = function() {
+            const isActivating = imageStates.cat1 === '11.png';
+            if (isActivating) {
+                cat1.src = '1.png';
+                imageStates.cat1 = '1.png';
+                soundDoom.currentTime = 0;
+                soundDoom.play();
+            } else {
+                cat1.src = '11.png';
+                imageStates.cat1 = '11.png';
+            }
+            checkCombination();
+        };
+
+        // 두 번째 고양이 이미지 클릭 이벤트
+        cat2.onclick = function() {
+            const isActivating = imageStates.cat2 === '21.png';
+            if (isActivating) {
+                cat2.src = '2.png';
+                imageStates.cat2 = '2.png';
+                soundDoom.currentTime = 0;
+                soundDoom.play();
+            } else {
+                cat2.src = '21.png';
+                imageStates.cat2 = '21.png';
+            }
+            checkCombination();
+        };
+
+        // 세 번째 고양이 이미지 클릭 이벤트
+        cat3.onclick = function() {
+            const isActivating = imageStates.cat3 === '31.png';
+            if (isActivating) {
+                cat3.src = '3.png';
+                imageStates.cat3 = '3.png';
+                soundDoom.currentTime = 0;
+                soundDoom.play();
+            } else {
+                cat3.src = '31.png';
+                imageStates.cat3 = '31.png';
+            }
+            checkCombination();
+        };
+    </script>
+</body>
+</html>
