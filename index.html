@@ -76,13 +76,13 @@
     <audio id="soundDoodoo" src="doodoo.mp3"></audio>
 
     <script>
-        // HTML 요소 변수 할당
+       
         const cat1 = document.getElementById('cat1');
         const cat2 = document.getElementById('cat2');
         const cat3 = document.getElementById('cat3');
         const resultGif = document.getElementById('result-gif');
         
-        // 오디오 요소 변수 할당
+       
         const soundDoom = document.getElementById('soundDoom');
         const soundDance = document.getElementById('soundDance');
         const soundNang = document.getElementById('soundNang');
@@ -90,14 +90,14 @@
         const soundDoodoo = document.getElementById('soundDoodoo');
         const combinationSounds = [soundDance, soundNang, soundSweet, soundDoodoo];
 
-        // 이미지 현재 상태 저장 객체
+        
         const imageStates = {
             cat1: '11.png',
             cat2: '21.png',
             cat3: '31.png'
         };
 
-        // GIF 링크 저장 객체
+       
         const gifLinks = {
             combo1: "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWo3NnFzeGVsMjRydzNmMmc5c2QxODVzZnlvM21tc3B3d3MxaXgzMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ylyUQkUxqSlpObS1z2/giphy.gif",
             combo2: "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGNmcHljbGRxbHlnbTBocWUycno3YzNrMW44ajJ2cDdsOTNxM205eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/5xtDarzQESdPyVnvolO/giphy.gif",
@@ -105,10 +105,10 @@
             combo4: "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExemdvZXJlYjNqOGhjbnp5M2NvbnZhMGo2cHh4NXdoYXJpaGEweW9zYSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bTvCkBTQDIPyE/giphy.gif"
         };
         
-        // doom.mp3가 끝난 후 재생될 오디오를 저장하는 변수
+       
         let pendingSound = null;
 
-        // doom.mp3 재생이 끝나면 pendingSound에 할당된 오디오를 재생
+        
         soundDoom.onended = function() {
             if (pendingSound) {
                 pendingSound.currentTime = 0;
@@ -117,7 +117,7 @@
             }
         };
         
-        // 모든 조합 오디오를 중지하는 함수
+        
         function stopAllCombinationSounds() {
             combinationSounds.forEach(sound => {
                 sound.pause();
@@ -126,9 +126,9 @@
             pendingSound = null;
         }
 
-        // 이미지 조합을 확인하고 GIF와 오디오를 제어하는 함수
+       
         function checkCombination() {
-            stopAllCombinationSounds(); // 함수 시작 시 모든 조합 오디오 중지
+            stopAllCombinationSounds();
             
             const { cat1, cat2, cat3 } = imageStates;
             let currentGif = '';
@@ -158,7 +158,7 @@
             resultGif.src = currentGif; // GIF 업데이트
 
             if (currentSound) {
-                // doom.mp3가 재생 중이 아니면 바로 재생, 재생 중이면 pendingSound로 설정
+                
                 if (soundDoom.paused) {
                     currentSound.currentTime = 0;
                     currentSound.play();
@@ -168,7 +168,7 @@
             }
         }
 
-        // 첫 번째 고양이 이미지 클릭 이벤트
+        
         cat1.onclick = function() {
             const isActivating = imageStates.cat1 === '11.png';
             if (isActivating) {
@@ -183,7 +183,7 @@
             checkCombination();
         };
 
-        // 두 번째 고양이 이미지 클릭 이벤트
+        
         cat2.onclick = function() {
             const isActivating = imageStates.cat2 === '21.png';
             if (isActivating) {
@@ -198,7 +198,7 @@
             checkCombination();
         };
 
-        // 세 번째 고양이 이미지 클릭 이벤트
+       
         cat3.onclick = function() {
             const isActivating = imageStates.cat3 === '31.png';
             if (isActivating) {
